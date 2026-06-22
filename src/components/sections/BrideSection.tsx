@@ -42,7 +42,7 @@ export function BrideSection() {
                 className="text-xs uppercase tracking-[0.55em] text-[#f0d9a8]"
                 style={{ fontFamily: "var(--font-dev-hindi), serif" }}
               >
-                आयुष्मती कुमारी
+                आयुष्मती कुमारी  11
               </p>
               <span className="h-px w-10 bg-gradient-to-l from-[#d4af7a] to-transparent" />
             </div>
