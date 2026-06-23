@@ -130,3 +130,78 @@ body::after {
     background-position: 200% 50%;
   }
 }
+
+/* Calligraphy clip-reveal for couple names in the gates section */
+@keyframes inkReveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+/* Soft vertical bob for floating decorative elements */
+@keyframes bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+/* Shimmering gold sweep used on ornamental borders */
+@keyframes goldSweep {
+  0% {
+    background-position: -150% 0;
+  }
+  100% {
+    background-position: 250% 0;
+  }
+}
+
+/* Gentle twinkle for star-like motes */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utility: gold shimmering text fill */
+.text-gold-shimmer {
+  background: linear-gradient(
+    100deg,
+    #c9a24a 0%,
+    #f0d9a8 25%,
+    #fff7d9 50%,
+    #f0d9a8 75%,
+    #c9a24a 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldSweep 6s linear infinite;
+}
