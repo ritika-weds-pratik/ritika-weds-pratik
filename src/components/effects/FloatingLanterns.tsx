@@ -3,13 +3,18 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useMounted } from "@/hooks/useMounted";
 
 /**
  * Sky lanterns (आकाश कंदील) gently rising with sway — for the grand finale.
  * Pure CSS/Framer Motion. Static when reduced motion is preferred.
+ *
+ * Randomized values are generated client-side only (mount gate) so server
+ * and first client render match — no hydration mismatch.
  */
 export function FloatingLanterns({ count = 9 }: { count?: number }) {
   const reduced = usePrefersReducedMotion();
+  const mounted = useMounted();
 
   const lanterns = useMemo(
     () =>
@@ -23,6 +28,11 @@ export function FloatingLanterns({ count = 9 }: { count?: number }) {
       })),
     [count]
   );
+
+  // Pre-hydration: empty wrapper (matches server HTML).
+  if (!mounted) {
+    return <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden />;
+  }
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
@@ -44,10 +54,7 @@ export function FloatingLanterns({ count = 9 }: { count?: number }) {
           }
         >
           {/* Lantern body */}
-          <div
-            className="relative"
-            style={{ width: l.size, height: l.size * 1.4 }}
-          >
+          <div className="relative" style={{ width: l.size, height: l.size * 1.4 }}>
             <div
               className="absolute inset-0 rounded-[40%_40%_45%_45%]"
               style={{

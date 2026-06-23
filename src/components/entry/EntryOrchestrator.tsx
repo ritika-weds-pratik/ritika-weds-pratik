@@ -3,70 +3,61 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { SplashLoader } from "@/components/entry/SplashLoader";
-import { EnvelopeExperience } from "@/components/entry/EnvelopeExperience";
 import { PalaceGatesReveal } from "@/components/entry/PalaceGatesReveal";
 import { useAudio } from "@/components/providers/AudioProvider";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
-type Stage = "splash" | "envelope" | "gates" | "done";
+type Stage = "splash" | "gates" | "done";
 
 const STORAGE_KEY = "wedding-entry-seen";
 
 /**
- * Runs the cinematic entry trilogy on first visit:
- *   splash  →  envelope (+ unlocks audio on the wax-seal tap)
- *            →  palace gates reveal  →  main site
+ * Runs the cinematic entry experience on first visit:
+ *   splash (Begin tap unlocks audio) → palace gates reveal → main site
  *
- * On repeat visits (same browser) the full intro is skipped, but a guest
- * can still replay it via a hidden control if desired. Reduced-motion
+ * On repeat visits (same browser session) the intro is skipped. Reduced-motion
  * users get a fast path straight to the main site.
  */
 export function EntryOrchestrator({ children }: { children: React.ReactNode }) {
   const reduced = usePrefersReducedMotion();
   const { unlock } = useAudio();
-  const [stage, setStage] = useState<Stage>("splash");
 
-  // Decide whether to play the intro at all.
-  useEffect(() => {
-    if (reduced) {
-      setStage("done");
-      return;
-    }
+  // Compute the initial stage without a setState-in-effect cascade:
+  // - reduced motion, or a repeat visit in this session → skip straight in.
+  const [skipIntro] = useState(() => {
+    if (reduced) return true;
     try {
-      if (sessionStorage.getItem(STORAGE_KEY) === "1") {
-        setStage("done");
-      }
+      return sessionStorage.getItem(STORAGE_KEY) === "1";
     } catch {
-      /* sessionStorage may be unavailable; default to playing the intro */
+      return false;
     }
-  }, [reduced]);
+  });
+  const [stage, setStage] = useState<Stage>(skipIntro ? "done" : "splash");
 
-  // Mark the intro as completed once we reach the main site.
+  // Mark the intro as completed once we reach the main site, and reset scroll.
   useEffect(() => {
-    if (stage === "done") {
-      try {
-        sessionStorage.setItem(STORAGE_KEY, "1");
-      } catch {
-        /* ignore */
-      }
-      // Ensure scroll begins at the top of the invitation.
-      window.scrollTo(0, 0);
+    if (stage !== "done") return;
+    try {
+      sessionStorage.setItem(STORAGE_KEY, "1");
+    } catch {
+      /* ignore */
     }
+    window.scrollTo(0, 0);
   }, [stage]);
 
-  const toEnvelope = useCallback(() => setStage("envelope"), []);
-  const toGates = useCallback(() => {
-    // The wax-seal tap is the user gesture that unlocks audio.
+  // The splash "Begin" tap is the user gesture that unlocks audible audio,
+  // then advances to the palace gates reveal.
+  const beginFromSplash = useCallback(() => {
     unlock();
     setStage("gates");
   }, [unlock]);
+
   const toDone = useCallback(() => setStage("done"), []);
 
   return (
     <>
       <AnimatePresence mode="wait">
-        {stage === "splash" && <SplashLoader key="splash" onComplete={toEnvelope} />}
-        {stage === "envelope" && <EnvelopeExperience key="env" onOpen={toGates} />}
+        {stage === "splash" && <SplashLoader key="splash" onComplete={beginFromSplash} />}
         {stage === "gates" && <PalaceGatesReveal key="gates" onOpen={toDone} />}
       </AnimatePresence>
 
@@ -74,9 +65,7 @@ export function EntryOrchestrator({ children }: { children: React.ReactNode }) {
       <div
         aria-hidden={stage !== "done"}
         style={
-          stage === "done"
-            ? undefined
-            : { overflow: "hidden", height: "100vh", maxHeight: "100dvh" }
+          stage === "done" ? undefined : { overflow: "hidden", height: "100vh", maxHeight: "100dvh" }
         }
       >
         {children}

@@ -11,77 +11,190 @@ import {
 } from "react";
 
 /**
- * Ambient audio (shehnai / instrumental). Browsers block autoplay-with-sound
- * until a user gesture, so playback is unlocked on the first interaction —
- * which the EntryOrchestrator triggers when the guest taps the wax seal.
+ * Ambient background music via the YouTube IFrame Player API.
  *
- * Audio source: /audio/ambient.mp3 — swap this file for the couple's own
- * track. If the file is missing the player silently no-ops.
+ * The track (https://www.youtube.com/watch?v=MqGPokaVo6o) is loaded into a
+ * tiny off-screen iframe. Browsers block autoplay-with-sound until a user
+ * gesture, so audible playback is unlocked on the first interaction — which
+ * the EntryOrchestrator triggers when the guest taps "Begin" on the splash.
+ *
+ * Until then the iframe is created and muted, so it can buffer freely.
+ * The MuteToggle flips player.mute()/unMute().
  */
+
+const VIDEO_ID = "MqGPokaVo6o";
+
+// Minimal subset of the YouTube IFrame API we use.
+type YTPlayer = {
+  playVideo: () => void;
+  pauseVideo: () => void;
+  mute: () => void;
+  unMute: () => void;
+  setVolume: (v: number) => void;
+  getPlayerState: () => number;
+  destroy: () => void;
+};
+
+declare global {
+  interface Window {
+    YT?: {
+      Player: new (
+        el: HTMLElement | string,
+        opts: Record<string, unknown>
+      ) => YTPlayer;
+      PlayerState: { PLAYING: number; CUED: number };
+    };
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
 
 type AudioContextValue = {
   ready: boolean;
   playing: boolean;
   muted: boolean;
-  /** Unlock + play. Called from a user gesture (the seal tap). */
+  /** Unlock + play audible audio. Called from a user gesture. */
   unlock: () => void;
   toggleMute: () => void;
 };
 
 const Ctx = createContext<AudioContextValue | null>(null);
 
-const TRACK = "/audio/ambient.mp3";
-
 export function AudioProvider({ children }: { children: ReactNode }) {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
+  // Latest "should play" flag, read inside the async onReady callback.
+  const shouldPlayRef = useRef(false);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true);
   const [shouldPlay, setShouldPlay] = useState(false);
 
-  // Set up the audio element on mount (muted is fine pre-gesture).
+  // Keep the ref in sync with state.
   useEffect(() => {
-    const audio = new Audio(TRACK);
-    audio.loop = true;
-    audio.volume = 0.35;
-    audio.preload = "none";
-    audioRef.current = audio;
+    shouldPlayRef.current = shouldPlay;
+  }, [shouldPlay]);
 
-    const onCanPlay = () => setReady(true);
-    audio.addEventListener("canplaythrough", onCanPlay);
+  // Inject the off-screen player host + YouTube API script once.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    // Host element for the player (1px, visually hidden but rendered so the
+    // API can attach to it).
+    const host = document.createElement("div");
+    host.setAttribute("data-yt-audio", "");
+    host.style.position = "fixed";
+    host.style.width = "1px";
+    host.style.height = "1px";
+    host.style.left = "-9999px";
+    host.style.top = "0";
+    host.style.pointerEvents = "none";
+    host.style.opacity = "0";
+    host.style.zIndex = "-1";
+    document.body.appendChild(host);
+
+    const buildPlayer = () => {
+      if (!window.YT || !window.YT.Player) return;
+      // The API replaces the given element with an iframe.
+      const inner = document.createElement("div");
+      host.appendChild(inner);
+      playerRef.current = new window.YT.Player(inner, {
+        videoId: VIDEO_ID,
+        width: "1",
+        height: "1",
+        playerVars: {
+          autoplay: 1, // allowed because we start muted
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          rel: 0,
+          loop: 1,
+          playlist: VIDEO_ID, // loop requires the video id in playlist
+        },
+        events: {
+          onReady: () => {
+            const p = playerRef.current;
+            if (!p) return;
+            p.setVolume(45);
+            p.mute(); // muted until the user gesture
+            setReady(true);
+            if (shouldPlayRef.current) {
+              p.unMute();
+              p.setVolume(45);
+              p.playVideo();
+              setMuted(false);
+            }
+          },
+          onStateChange: (e: { data: number }) => {
+            const PLAYING = window.YT?.PlayerState.PLAYING ?? 1;
+            setPlaying(e.data === PLAYING);
+          },
+        },
+      });
+    };
+
+    if (window.YT && window.YT.Player) {
+      buildPlayer();
+    } else {
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        prev?.();
+        buildPlayer();
+      };
+      // Load the API script if not already present.
+      if (!document.querySelector("script[data-yt-api]")) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        tag.async = true;
+        tag.setAttribute("data-yt-api", "");
+        document.head.appendChild(tag);
+      }
+    }
+
     return () => {
-      audio.removeEventListener("canplaythrough", onCanPlay);
-      audio.pause();
-      audioRef.current = null;
+      try {
+        playerRef.current?.destroy();
+      } catch {
+        /* ignore */
+      }
+      playerRef.current = null;
+      if (host.parentNode) {
+        host.parentNode.removeChild(host);
+      }
     };
   }, []);
 
-  // React to mute changes.
+  // Attempt playback once unlocked and ready (for the case where the guest
+  // taps Begin after the player has already signalled ready).
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.muted = muted;
-  }, [muted]);
-
-  // Attempt playback once unlocked and ready.
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !shouldPlay) return;
-    if (ready) {
-      audio
-        .play()
-        .then(() => setPlaying(true))
-        .catch(() => {
-          /* autoplay still blocked; the mute toggle can retry */
-        });
-    } else {
-      // load metadata so we can play as soon as allowed
-      audio.load();
+    const p = playerRef.current;
+    if (!p || !shouldPlay || !ready) return;
+    try {
+      p.unMute();
+      p.setVolume(45);
+      p.playVideo();
+      setMuted(false);
+    } catch {
+      /* player not quite ready */
     }
   }, [shouldPlay, ready]);
 
   const unlock = useCallback(() => setShouldPlay(true), []);
-  const toggleMute = useCallback(() => setMuted((m) => !m), []);
+
+  const toggleMute = useCallback(() => {
+    const p = playerRef.current;
+    if (!p) return;
+    setMuted((wasMuted) => {
+      if (wasMuted) {
+        p.unMute();
+        p.setVolume(45);
+        p.playVideo();
+        return false;
+      }
+      p.mute();
+      return true;
+    });
+  }, []);
 
   return (
     <Ctx.Provider value={{ ready, playing, muted, unlock, toggleMute }}>

@@ -7,7 +7,6 @@ import { VenueSection } from "@/components/sections/VenueSection";
 import { FamilySection } from "@/components/sections/FamilySection";
 import { CountdownSection } from "@/components/sections/CountdownSection";
 import { GallerySection } from "@/components/sections/GallerySection";
-import { RSVPSection } from "@/components/sections/RSVPSection";
 import { FinalSection } from "@/components/sections/FinalSection";
 import { Footer } from "@/components/shared/Footer";
 
@@ -16,9 +15,9 @@ import { Footer } from "@/components/shared/Footer";
  *
  *   Hero  →  Divine Blessings  →  Couple Introduction  →  Couple Story
  *         →  Events (storybook)  →  Venue  →  Family
- *         →  Countdown  →  Gallery  →  RSVP  →  Grand Finale  →  Footer
+ *         →  Countdown  →  Gallery  →  Grand Finale  →  Footer
  *
- * The cinematic entry trilogy (splash → envelope → palace gates) and the
+ * The cinematic entry experience (splash → palace gates) and the
  * smooth-scroll + audio providers wrap this page in layout.tsx.
  */
 export default function Home() {
@@ -42,7 +41,6 @@ export default function Home() {
       <FamilySection />
       <CountdownSection />
       <GallerySection />
-      <RSVPSection />
       <FinalSection />
       <Footer />
     </main>

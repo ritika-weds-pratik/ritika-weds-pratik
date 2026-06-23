@@ -73,7 +73,7 @@ export const events: CeremonyEvent[] = [
     englishLabel: "Satya Narayan Pujan",
     date: "08 July 2026",
     time: "8:00 AM onwards",
-    venue: "Pearl Marriage Vatika",
+    venue: "आयुष्मती का आवास, चिमनापुर",
     description:
       "शुभ कार्य का विधिवत आरंभ भगवान विष्णु के सत्यनारायण स्वरूप के पूजन एवं कथा श्रवण से होता है।",
     accent: "gold",
@@ -85,7 +85,7 @@ export const events: CeremonyEvent[] = [
     englishLabel: "Matkor Ceremony",
     date: "08 July 2026",
     time: "11:00 AM",
-    venue: "Pearl Marriage Vatika",
+    venue: "आयुष्मती का आवास, चिमनापुर",
     description:
       "माटी के कलशों को सजाकर लाया जाता है — सुख-समृद्धि और गृहस्थी की शुभ शुरुआत का प्रतीक।",
     accent: "bronze",
@@ -97,7 +97,7 @@ export const events: CeremonyEvent[] = [
     englishLabel: "Mehendi Ceremony",
     date: "10 July 2026",
     time: "4:00 PM",
-    venue: "Pearl Marriage Vatika",
+    venue: "आयुष्मती का आवास, चिमनापुर",
     description:
       "हाथों पर रची मेहंदी के साथ हंसी, गीत और रंगों का उत्सव — दुल्हन के लिए विशेष।",
     accent: "emerald",
@@ -109,7 +109,7 @@ export const events: CeremonyEvent[] = [
     englishLabel: "Sangeet Night",
     date: "10 July 2026",
     time: "8:00 PM",
-    venue: "Pearl Marriage Vatika",
+    venue: "आयुष्मती का आवास, चिमनापुर",
     description:
       "परिवारों की धमाकेदार प्रस्तुतियाँ, संगीत की ताल और रात भर चलने वाला नाच-गाना।",
     accent: "rose",
@@ -137,7 +137,7 @@ export const events: CeremonyEvent[] = [
     description:
       "नवदंपति का राजसी अभिनंदन — भव्य भोज, आशीर्वाद और यादगार शाम।",
     accent: "ivory",
-    motif: "🥂",
+    motif: "💐",
   },
 ];
 

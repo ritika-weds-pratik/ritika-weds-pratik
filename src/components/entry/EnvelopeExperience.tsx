@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { GoldenParticles } from "@/components/effects/GoldenParticles";
 import { couple, weddingDate } from "@/data/wedding";
@@ -24,8 +24,6 @@ export function EnvelopeExperience({ onOpen }: { onOpen: () => void }) {
   const reduced = usePrefersReducedMotion();
   const [stage, setStage] = useState<"sealed" | "breaking" | "opening" | "done">("sealed");
   const [shards, setShards] = useState<Shard[]>([]);
-  const stageRef = useRef(stage);
-  stageRef.current = stage;
 
   // Mouse-driven 3D tilt (desktop only, not reduced-motion).
   const mx = useMotionValue(0);
@@ -44,22 +42,33 @@ export function EnvelopeExperience({ onOpen }: { onOpen: () => void }) {
     return () => window.removeEventListener("pointermove", handle);
   }, [mx, my, reduced]);
 
-  // Burst shard data once.
+  // Burst shard data computed once (random values are intentional here).
   const burst = useMemo<Shard[]>(
     () =>
       Array.from({ length: 18 }).map((_, i) => ({
         id: i,
+        // eslint-disable-next-line react-hooks/purity
         dx: (Math.random() - 0.5) * 320,
+        // eslint-disable-next-line react-hooks/purity
         dy: (Math.random() - 0.5) * 320,
+        // eslint-disable-next-line react-hooks/purity
         rotate: (Math.random() - 0.5) * 540,
       })),
     []
   );
 
   function handleSealClick() {
-    if (stageRef.current !== "sealed") return;
+    // Guard against re-triggering via the functional setState (no ref needed).
+    let alreadySealed = false;
+    setStage((prev) => {
+      if (prev === "sealed") {
+        alreadySealed = true;
+        return "breaking";
+      }
+      return prev;
+    });
+    if (!alreadySealed) return;
     setShards(burst);
-    setStage("breaking");
     // seal cracks -> flap opens -> card rises
     window.setTimeout(() => setStage("opening"), 650);
     window.setTimeout(() => setStage("done"), 2300);

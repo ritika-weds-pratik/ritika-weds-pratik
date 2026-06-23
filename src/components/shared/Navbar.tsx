@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLenis } from "lenis/react";
 import { Menu, Sparkles, X } from "lucide-react";
 import { couple } from "@/data/wedding";
 import { MuteToggle } from "@/components/ui/MuteToggle";
@@ -12,7 +13,6 @@ const links = [
   { href: "#venue", label: "Venue" },
   { href: "#family", label: "Family" },
   { href: "#gallery", label: "Gallery" },
-  { href: "#rsvp", label: "RSVP" },
 ];
 
 /**
@@ -20,12 +20,16 @@ const links = [
  * hero), condenses into a solid glass bar once the guest scrolls. Includes
  * a working mobile menu and the ambient-music mute toggle.
  *
- * Anchor links use Lenis (if active) via smooth scroll fallback, and a
- * header offset so section headings aren't hidden under the fixed bar.
+ * Navigation uses the active Lenis instance when present (Lenis hijacks the
+ * native scroll, so window.scrollTo does nothing under smooth scroll) and
+ * falls back to window.scrollTo when reduced-motion disabled Lenis. A fixed
+ * header offset keeps section headings from hiding under the bar — this is
+ * what was breaking the mobile menu navigation.
  */
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const lenis = useLenis();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -38,8 +42,12 @@ export function Navbar() {
     e.preventDefault();
     setOpen(false);
     const el = document.querySelector(href);
-    if (el) {
-      const top = (el as HTMLElement).getBoundingClientRect().top + window.scrollY - 80;
+    if (!el) return;
+    const top = (el as HTMLElement).getBoundingClientRect().top + window.scrollY - 84;
+    // Prefer Lenis smooth scroll; fall back to native when Lenis is inactive.
+    if (lenis) {
+      lenis.scrollTo(top, { immediate: false });
+    } else {
       window.scrollTo({ top, behavior: "smooth" });
     }
   };
