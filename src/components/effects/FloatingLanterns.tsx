@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useMounted } from "@/hooks/useMounted";
@@ -16,17 +16,17 @@ export function FloatingLanterns({ count = 9 }: { count?: number }) {
   const reduced = usePrefersReducedMotion();
   const mounted = useMounted();
 
-  const lanterns = useMemo(
-    () =>
-      Array.from({ length: count }).map((_, i) => ({
-        id: i,
-        left: 6 + Math.random() * 88,
-        size: 26 + Math.random() * 22,
-        delay: Math.random() * 6,
-        duration: 14 + Math.random() * 10,
-        sway: 20 + Math.random() * 30,
-      })),
-    [count]
+  // Randomized once via a lazy state initializer (allowed to be impure,
+  // runs only on the client after the mount gate).
+  const [lanterns] = useState(() =>
+    Array.from({ length: count }).map((_, i) => ({
+      id: i,
+      left: 6 + Math.random() * 88,
+      size: 26 + Math.random() * 22,
+      delay: Math.random() * 6,
+      duration: 14 + Math.random() * 10,
+      sway: 20 + Math.random() * 30,
+    }))
   );
 
   // Pre-hydration: empty wrapper (matches server HTML).

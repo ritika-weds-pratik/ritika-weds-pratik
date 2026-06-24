@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useMounted } from "@/hooks/useMounted";
@@ -36,20 +36,20 @@ export function FallingPetals({ count = 18, color = "#e8939f", className }: Prop
   const reduced = usePrefersReducedMotion();
   const mounted = useMounted();
 
-  const petals = useMemo<Petal[]>(
-    () =>
-      Array.from({ length: count }).map((_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        size: 8 + Math.random() * 10,
-        delay: Math.random() * 8,
-        duration: 9 + Math.random() * 8,
-        sway: 30 + Math.random() * 50,
-        rotateEnd: 180 + Math.random() * 360,
-        opacity: 0.4 + Math.random() * 0.4,
-      })),
-    [count]
+  // Randomized once via a lazy state initializer (allowed to be impure,
+  // runs only on the client after the mount gate).
+  const [petals] = useState<Petal[]>(() =>
+    Array.from({ length: count }).map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: 8 + Math.random() * 10,
+      delay: Math.random() * 8,
+      duration: 9 + Math.random() * 8,
+      sway: 30 + Math.random() * 50,
+      rotateEnd: 180 + Math.random() * 360,
+      opacity: 0.4 + Math.random() * 0.4,
+    }))
   );
 
   const wrapper = `pointer-events-none absolute inset-0 overflow-hidden ${className ?? ""}`;

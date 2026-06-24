@@ -8,7 +8,7 @@ import { couple } from "@/data/wedding";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 /**
- * Stage 3 — the grand reveal behind the opened envelope.
+ * Stage 2 — the grand reveal that follows the splash.
  * Twin palace gates swing open, petals and golden sparkles flood in,
  * the couple monogram emerges and the names reveal via a calligraphy
  * ink-sweep. Then onOpen() hands control to the main invitation site.

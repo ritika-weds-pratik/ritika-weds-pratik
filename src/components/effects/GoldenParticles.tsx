@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useMounted } from "@/hooks/useMounted";
@@ -36,20 +36,20 @@ export function GoldenParticles({ count = 20, className }: Props) {
   const reduced = usePrefersReducedMotion();
   const mounted = useMounted();
 
-  const particles = useMemo<Particle[]>(
-    () =>
-      Array.from({ length: count }).map((_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        size: 1 + Math.random() * 2.5,
-        delay: Math.random() * 6,
-        duration: 7 + Math.random() * 8,
-        drift: (Math.random() - 0.5) * 30,
-        opacity: 0.3 + Math.random() * 0.5,
-        rise: 60 + Math.random() * 40,
-      })),
-    [count]
+  // Randomized once via a lazy state initializer (allowed to be impure,
+  // runs only on the client after the mount gate).
+  const [particles] = useState<Particle[]>(() =>
+    Array.from({ length: count }).map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: 1 + Math.random() * 2.5,
+      delay: Math.random() * 6,
+      duration: 7 + Math.random() * 8,
+      drift: (Math.random() - 0.5) * 30,
+      opacity: 0.3 + Math.random() * 0.5,
+      rise: 60 + Math.random() * 40,
+    }))
   );
 
   const wrapper = `pointer-events-none absolute inset-0 overflow-hidden ${className ?? ""}`;

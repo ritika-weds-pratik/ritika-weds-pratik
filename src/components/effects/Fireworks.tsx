@@ -39,8 +39,8 @@ export function Fireworks({ className }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let width = (canvas.width = canvas.offsetWidth * devicePixelRatio);
-    let height = (canvas.height = canvas.offsetHeight * devicePixelRatio);
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
     ctx.scale(devicePixelRatio, devicePixelRatio);
 
     const rockets: Rocket[] = [];
@@ -130,8 +130,8 @@ export function Fireworks({ className }: { className?: string }) {
     };
 
     const resize = () => {
-      width = canvas.width = canvas.offsetWidth * devicePixelRatio;
-      height = canvas.height = canvas.offsetHeight * devicePixelRatio;
+      canvas.width = canvas.offsetWidth * devicePixelRatio;
+      canvas.height = canvas.offsetHeight * devicePixelRatio;
       ctx.scale(devicePixelRatio, devicePixelRatio);
     };
     window.addEventListener("resize", resize);

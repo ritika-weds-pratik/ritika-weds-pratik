@@ -71,7 +71,7 @@ export const events: CeremonyEvent[] = [
     key: "satya-narayan-pujan",
     title: "श्री सत्यनारायण पूजन",
     englishLabel: "Satya Narayan Pujan",
-    date: "08 July 2026",
+    date: "9 July 2026",
     time: "8:00 AM onwards",
     venue: "आयुष्मती का आवास, चिमनापुर",
     description:
@@ -83,7 +83,7 @@ export const events: CeremonyEvent[] = [
     key: "matkor",
     title: "मंडवा मत्कोर",
     englishLabel: "Matkor Ceremony",
-    date: "08 July 2026",
+    date: "9 July 2026",
     time: "11:00 AM",
     venue: "आयुष्मती का आवास, चिमनापुर",
     description:
@@ -117,27 +117,15 @@ export const events: CeremonyEvent[] = [
   },
   {
     key: "wedding",
-    title: "शुभ विवाह एवं प्रीति भोज",
+    title: "शुभ विवाह, स्वागत समारोह एवं प्रीति भोज",
     englishLabel: "Wedding Ceremony",
     date: "11 July 2026",
-    time: "11:00 AM (विवाह मुहूर्त)",
+    time: "11:00 AM (विवाह मुहूर्त) · स्वागत 7:00 PM",
     venue: "Pearl Marriage Vatika",
     description:
-      "कन्यादान, मंगलफेरे और सात वचनों के साथ दो आत्माओं का पावन मिलन।",
+      "कन्यादान, मंगलफेरे और सात वचनों के साथ दो आत्माओं का पावन मिलन, फिर नवदंपति का राजसी अभिनंदन — भव्य भोज, आशीर्वाद और यादगार शाम।",
     accent: "maroon",
     motif: "💍",
-  },
-  {
-    key: "reception",
-    title: "स्वागत समारोह",
-    englishLabel: "Reception",
-    date: "11 July 2026",
-    time: "7:00 PM",
-    venue: "Pearl Marriage Vatika",
-    description:
-      "नवदंपति का राजसी अभिनंदन — भव्य भोज, आशीर्वाद और यादगार शाम।",
-    accent: "ivory",
-    motif: "💐",
   },
 ];
 

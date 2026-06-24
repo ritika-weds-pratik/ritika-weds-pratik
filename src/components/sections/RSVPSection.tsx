@@ -24,8 +24,11 @@ export function RSVPSection() {
     () =>
       Array.from({ length: 24 }).map((_, i) => ({
         id: i,
+        // eslint-disable-next-line react-hooks/purity
         dx: (Math.random() - 0.5) * 360,
+        // eslint-disable-next-line react-hooks/purity
         dy: (Math.random() - 0.5) * 360,
+        // eslint-disable-next-line react-hooks/purity
         r: (Math.random() - 0.5) * 540,
         color: ["#f0d9a8", "#c9a24a", "#fff7d9", "#e8939f"][i % 4],
       })),
