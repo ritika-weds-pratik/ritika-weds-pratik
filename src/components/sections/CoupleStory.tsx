@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { RevealOnScroll } from "@/components/effects/RevealOnScroll";
 import { OrnamentalFrame } from "@/components/effects/OrnamentalFrame";
 import { GoldenParticles } from "@/components/effects/GoldenParticles";
@@ -51,6 +51,8 @@ const milestones: Milestone[] = [
 export function CoupleStory() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   // Auto-progress timeline
   useEffect(() => {
@@ -63,6 +65,33 @@ export function CoupleStory() {
     return () => clearInterval(interval);
   }, [isPaused]);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsPaused(true);
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    setIsPaused(false);
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const diffX = e.changedTouches[0].clientX - touchStartX.current;
+    const diffY = e.changedTouches[0].clientY - touchStartY.current;
+    
+    const threshold = 50;
+    // Ensure horizontal swipe is dominant
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+      if (diffX > 0) {
+        // Swiped right -> go to previous chapter
+        setActiveIndex((prev) => (prev - 1 + milestones.length) % milestones.length);
+      } else {
+        // Swiped left -> go to next chapter
+        setActiveIndex((prev) => (prev + 1) % milestones.length);
+      }
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
   return (
     <section
       id="story"
@@ -70,8 +99,8 @@ export function CoupleStory() {
       className="relative overflow-hidden bg-[#060914] py-24 md:py-32"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={() => setIsPaused(true)}
-      onTouchEnd={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="absolute inset-0 bg-[url('/royal/texture.png')] bg-cover bg-center opacity-5 mix-blend-overlay" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,122,0.07),transparent_30%)]" />

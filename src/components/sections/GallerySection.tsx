@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useAnimationFrame } from "framer-motion";
-import { X, ZoomIn } from "lucide-react";
+import { X, ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
 import { RevealOnScroll } from "@/components/effects/RevealOnScroll";
 
 type Photo = {
@@ -63,9 +63,84 @@ export function GallerySection() {
   const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollPosition = useRef(0);
+
+  // Drag to scroll logic for mobile devices
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const startScrollPosition = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsHovered(true);
+    setIsDragging(true);
+    const touch = e.touches[0];
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now(),
+    };
+    startScrollPosition.current = scrollPosition.current;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || !containerRef.current) return;
+    const touch = e.touches[0];
+    const diffX = touch.clientX - touchStartRef.current.x;
+    const diffY = touch.clientY - touchStartRef.current.y;
+
+    // Prevent vertical page scroll if they are clearly swiping horizontally
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    }
+
+    let newPos = startScrollPosition.current + diffX;
+    
+    // Wrap scroll position to stay within infinite bounds [ -3200, 0 ]
+    while (newPos <= -3200) newPos += 3200;
+    while (newPos > 0) newPos -= 3200;
+
+    scrollPosition.current = newPos;
+    containerRef.current.style.transform = `translateX(${scrollPosition.current}px)`;
+  };
+
+  const handleTouchEnd = () => {
+    setIsHovered(false);
+    setIsDragging(false);
+    touchStartRef.current = null;
+  };
+
+  // Lightbox swipe and navigation handlers
+  const handlePrev = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setSelected((s) => (s === null ? 0 : (s - 1 + photos.length) % photos.length));
+  };
+
+  const handleNext = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setSelected((s) => (s === null ? 0 : (s + 1) % photos.length));
+  };
+
+  const lightboxTouchStart = useRef<number | null>(null);
+
+  const handleLightboxTouchStart = (e: React.TouchEvent) => {
+    lightboxTouchStart.current = e.touches[0].clientX;
+  };
+
+  const handleLightboxTouchEnd = (e: React.TouchEvent) => {
+    if (lightboxTouchStart.current === null) return;
+    const diffX = e.changedTouches[0].clientX - lightboxTouchStart.current;
+    const threshold = 50; // min distance
+    if (diffX > threshold) {
+      handlePrev();
+    } else if (diffX < -threshold) {
+      handleNext();
+    }
+    lightboxTouchStart.current = null;
+  };
   
   useAnimationFrame((t, delta) => {
-    if (!containerRef.current || isHovered || selected !== null) return;
+    if (!containerRef.current || isHovered || selected !== null || isDragging) return;
     
     // Adjust speed here (pixels per millisecond)
     const speed = 0.05;
@@ -128,12 +203,13 @@ export function GallerySection() {
 
       {/* Luxury Auto-Carousel — overflow-hidden clips the w-max inner rail */}
       <div 
-        className="relative z-20 mt-20 w-full overflow-hidden py-10"
-        style={{ isolation: "isolate", contain: "layout paint" }}
+        className="relative z-20 mt-20 w-full overflow-hidden py-10 select-none"
+        style={{ isolation: "isolate", contain: "layout paint", touchAction: "pan-y" }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onTouchStart={() => setIsHovered(true)}
-        onTouchEnd={() => setIsHovered(false)}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         <div 
           ref={containerRef}
@@ -214,11 +290,31 @@ export function GallerySection() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
             onClick={() => setSelected(null)}
+            onTouchStart={handleLightboxTouchStart}
+            onTouchEnd={handleLightboxTouchEnd}
             data-lenis-prevent
           >
             {/* Ambient glows */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#d4af7a]/10 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#e8939f]/10 rounded-full blur-[100px] pointer-events-none" />
+
+            {/* Previous Arrow */}
+            <button
+              onClick={handlePrev}
+              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 rounded-full border border-[#d4af7a]/30 bg-[#0b1027]/70 p-3 md:p-4 text-[#f5efe0] backdrop-blur-md transition-all hover:bg-[#d4af7a]/20 hover:scale-110 active:scale-95 shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-6 w-6 md:h-8 md:w-8" />
+            </button>
+
+            {/* Next Arrow */}
+            <button
+              onClick={handleNext}
+              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 rounded-full border border-[#d4af7a]/30 bg-[#0b1027]/70 p-3 md:p-4 text-[#f5efe0] backdrop-blur-md transition-all hover:bg-[#d4af7a]/20 hover:scale-110 active:scale-95 shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
+            </button>
 
             <button
               className="absolute right-6 top-6 z-50 rounded-full border border-[#d4af7a]/30 bg-[#0b1027]/50 p-4 text-[#f5efe0] backdrop-blur-md transition-all hover:bg-[#d4af7a]/20 hover:scale-110"

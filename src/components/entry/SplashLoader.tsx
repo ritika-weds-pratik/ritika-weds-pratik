@@ -81,9 +81,10 @@ export function SplashLoader({ onComplete }: { onComplete: () => void }) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.9 }}
-          className="text-xs uppercase tracking-[0.65em] text-[#f0d9a8]"
+          className="hindi-text text-sm font-semibold tracking-normal text-[#f0d9a8] select-none"
+          style={{ wordSpacing: "0.25em" }}
         >
-          ।। श्री गणेशाय नमः ।।
+          ॥ श्री गणेशाय नमः ॥
         </motion.p>
 
         {/* ===== R&P monogram medallion (third in hierarchy) ===== */}
