@@ -102,7 +102,8 @@ export function GallerySection() {
     <section
       id="gallery"
       aria-labelledby="gallery-heading"
-      className="relative overflow-hidden bg-[#0a1028] py-24 md:py-32"
+      className="relative overflow-hidden bg-[#0a1028] py-24 md:py-32" 
+      style={{ contain: "layout paint" }}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,122,0.04),transparent_16%)]" />
       
@@ -125,9 +126,10 @@ export function GallerySection() {
         </RevealOnScroll>
       </div>
 
-      {/* Luxury Auto-Carousel */}
+      {/* Luxury Auto-Carousel — overflow-hidden clips the w-max inner rail */}
       <div 
         className="relative z-20 mt-20 w-full overflow-hidden py-10"
+        style={{ isolation: "isolate", contain: "layout paint" }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onTouchStart={() => setIsHovered(true)}

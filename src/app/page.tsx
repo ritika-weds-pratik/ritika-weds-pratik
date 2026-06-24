@@ -22,7 +22,7 @@ import { Footer } from "@/components/shared/Footer";
  */
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#060914] text-[#f5efe0]">
+    <main className="overflow-x-hidden bg-[#060914] text-[#f5efe0]">
       {/* "Skip to invitation" link for keyboard / screen-reader users,
           bypassing the entry experience. */}
       <a

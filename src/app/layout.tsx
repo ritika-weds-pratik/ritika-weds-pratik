@@ -103,9 +103,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${cinzel.variable} ${devHindi.variable} ${notoDevanagari.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${cinzel.variable} ${devHindi.variable} ${notoDevanagari.variable} antialiased`}
     >
-      <body className="relative min-h-full overflow-x-hidden bg-[#060914] text-[#f5efe0]">
+      <body className="relative overflow-x-hidden bg-[#060914] text-[#f5efe0]">
         {/* SEO structured data */}
         <script
           type="application/ld+json"

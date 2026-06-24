@@ -18,7 +18,8 @@ export function FinalSection() {
     <section
       id="finale"
       aria-labelledby="finale-heading"
-      className="relative flex flex-col items-center justify-center overflow-hidden bg-[#060914] pt-24 pb-12"
+      className="relative flex flex-col items-center justify-center overflow-hidden bg-[#060914] pt-24 pb-20"
+      style={{ contain: "layout paint" }}
     >
       {/* Deep sky */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_75%,rgba(212,175,122,0.12),transparent_45%),linear-gradient(180deg,#050a1f_0%,#0b1027_55%,#060914_100%)]" />
@@ -39,6 +40,15 @@ export function FinalSection() {
         whileInView={{ opacity: [0, 0.8, 0.5, 0.85] }}
         viewport={{ once: true }}
         transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
+      />
+
+      {/* Seamless bottom fade — blends to exact page bg, eliminates any visible gap */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-32"
+        style={{
+          background: "linear-gradient(to bottom, transparent, #060914)",
+        }}
       />
 
       <FloatingLanterns count={10} />
