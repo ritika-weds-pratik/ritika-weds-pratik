@@ -57,10 +57,14 @@ export function RSVPSection() {
 
       <div className="relative z-10 mx-auto max-w-3xl px-6">
         <RevealOnScroll className="text-center">
-          <p className="font-serif text-sm uppercase tracking-[0.4em] text-[#f0d9a8]">RSVP</p>
-          <h2 id="rsvp-heading" className="mt-4 font-serif text-4xl text-[#f5efe0] md:text-5xl">
-            Your Presence Matters
-          </h2>
+          <p className="section-label">RSVP</p>
+          <div className="mt-4 flex items-center justify-center gap-3 pt-2">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#d4af7a]/60" />
+            <h2 id="rsvp-heading" className="hindi-text text-3xl font-bold text-[#f5efe0] text-gold-shimmer">
+              राजकीय निमंत्रण
+            </h2>
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#d4af7a]/60" />
+          </div>
         </RevealOnScroll>
 
         <AnimatePresence mode="wait">
@@ -186,7 +190,7 @@ export function RSVPSection() {
                 {name ? `धन्यवाद, ${name}! ` : "धन्यवाद! "}
                 Your presence has been noted with joy. We can&apos;t wait to celebrate with you.
               </p>
-              <p className="mt-4 text-xs uppercase tracking-[0.4em] text-[#f0d9a8]/70">
+              <p className="mt-4 hindi-text text-xs tracking-normal text-[#f0d9a8]/70">
                 आपका स्नेह एवं आशीर्वाद सादर आभार
               </p>
 

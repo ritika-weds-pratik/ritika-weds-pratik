@@ -18,7 +18,7 @@ export function FinalSection() {
     <section
       id="finale"
       aria-labelledby="finale-heading"
-      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#060914] py-24"
+      className="relative flex flex-col items-center justify-center overflow-hidden bg-[#060914] pt-24 pb-12"
     >
       {/* Deep sky */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_75%,rgba(212,175,122,0.12),transparent_45%),linear-gradient(180deg,#050a1f_0%,#0b1027_55%,#060914_100%)]" />
@@ -65,31 +65,25 @@ export function FinalSection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
-            className="hindi-text text-[clamp(2.8rem,6vw,5rem)] leading-tight text-[#f5efe0]"
+            className="hindi-text text-[clamp(2.8rem,7vw,5.5rem)] font-bold leading-[1.3] text-[#f5efe0] tracking-normal pt-2"
             style={{ textShadow: "0 0 40px rgba(240,217,168,0.45)" }}
           >
             {couple.bride.name} <span className="text-[#e8939f]">❤</span> {couple.groom.name}
           </motion.h2>
 
-          <p className="mt-4 text-sm uppercase tracking-[0.5em] text-[#f0d9a8]">{weddingDate.display}</p>
+          <p className="number-text mt-5 text-sm md:text-base font-semibold tracking-[0.3em] text-[#f0d9a8]">{weddingDate.display}</p>
         </RevealOnScroll>
 
         <RevealOnScroll delay={0.2}>
-          <p className="hindi-text mt-10 text-lg leading-9 text-[#f0d9a8] md:text-xl">
+          <p className="hindi-text mt-10 text-lg leading-9 text-[#f0d9a8] md:text-xl tracking-wide">
             एक नई कहानी का शुभ आरम्भ...
           </p>
         </RevealOnScroll>
 
         <RevealOnScroll delay={0.4}>
           <div className="mx-auto mt-8 max-w-2xl space-y-3">
-            <p className="hindi-text text-base leading-8 text-[#f5efe0]/90 md:text-lg">
-              आपकी उपस्थिति, आपका स्नेह और आपका आशीर्वाद ही
-            </p>
-            <p className="hindi-text text-base leading-8 text-[#f5efe0]/90 md:text-lg">
-              हमारे इस पावन मिलन को संपूर्ण बनाएगा।
-            </p>
-            <p className="hindi-text mt-6 text-base leading-8 text-[#f5efe0]/90 md:text-lg">
-              कृपया सपरिवार पधारकर हमारी खुशियों में सहभागी बनें।
+            <p className="hindi-text text-xl md:text-2xl leading-10 text-[#f5efe0]/90">
+              आपकी उपस्थिति एवं आशीर्वाद हमारे लिए सबसे बड़ा उपहार है।
             </p>
           </div>
         </RevealOnScroll>
@@ -100,8 +94,8 @@ export function FinalSection() {
             <span className="text-[#f0d9a8] text-xl">💐</span>
             <div className="h-px w-20 bg-gradient-to-l from-transparent to-[#d4af7a]/50" />
           </div>
-          <p className="hindi-text mt-6 text-xl text-[#f0d9a8] md:text-2xl">सादर आमंत्रण</p>
-          <p className="mt-2 text-xs uppercase tracking-[0.5em] text-[#f5efe0]/50">With Love &amp; Blessings</p>
+          <p className="hindi-text mt-6 text-xl text-[#f0d9a8] md:text-2xl tracking-normal">सादर आमंत्रण</p>
+          <p className="mt-2 hindi-text text-xs tracking-normal text-[#f5efe0]/50">With Love &amp; Blessings</p>
         </RevealOnScroll>
       </div>
     </section>

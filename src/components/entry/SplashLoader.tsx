@@ -124,11 +124,11 @@ export function SplashLoader({ onComplete }: { onComplete: () => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.2, duration: 0.8 }}
-          whileHover={{ scale: 1.04 }}
+          whileHover={{ scale: 1.04, backgroundColor: "rgba(212,175,122,0.25)" }}
           whileTap={{ scale: 0.97 }}
-          className="mt-12 rounded-full border border-[#d4af7a]/40 bg-[#d4af7a]/10 px-8 py-3 text-xs uppercase tracking-[0.4em] text-[#f0d9a8] backdrop-blur-sm transition hover:bg-[#d4af7a]/20"
+          className="mt-12 rounded-full border border-[#d4af7a]/50 bg-[#d4af7a]/15 px-10 py-4 text-xs font-semibold uppercase tracking-[0.45em] text-[#f0d9a8] backdrop-blur-sm shadow-[0_0_20px_rgba(212,175,122,0.2)] transition-all"
         >
-          Begin
+          Begin Journey
         </motion.button>
 
         <motion.p

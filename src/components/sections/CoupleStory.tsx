@@ -1,22 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { RevealOnScroll } from "@/components/effects/RevealOnScroll";
 import { OrnamentalFrame } from "@/components/effects/OrnamentalFrame";
 import { GoldenParticles } from "@/components/effects/GoldenParticles";
+import { FloatingLanterns } from "@/components/effects/FloatingLanterns";
+import { FallingPetals } from "@/components/effects/FallingPetals";
 import { couple } from "@/data/wedding";
 
-/**
- * Couple Story — an emotional, scroll-triggered timeline of the journey.
- * Each milestone alternates left/right with a placeholder memory frame that
- * can be swapped for a real photo (drop a file in /public and set `img`).
- */
 type Milestone = {
   year: string;
   title: string;
   story: string;
   emoji: string;
-  /** Optional photo path under /public. Omit for an ornamental placeholder. */
   img?: string;
 };
 
@@ -30,21 +27,21 @@ const milestones: Milestone[] = [
   },
   {
     year: "Growing Closer",
-    title: "नजदीकियाँ",
+    title: "प्रेम की शुरुआत",
     story:
       "Long conversations, shared laughter and the slow, certain realization that this was turning into something rare.",
-    emoji: "💬",
+    emoji: "💕",
   },
   {
     year: "The Proposal",
-    title: "वचन",
+    title: "सगाई",
     story:
       "A promise made from the heart — to walk together, to hold each other through every season of life.",
     emoji: "💍",
   },
   {
     year: "Forever Begins",
-    title: "शुभ विवाह",
+    title: "विवाह",
     story:
       "Surrounded by family and blessings, two souls step into a lifetime of love, trust and togetherness.",
     emoji: "👑",
@@ -52,90 +49,172 @@ const milestones: Milestone[] = [
 ];
 
 export function CoupleStory() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-progress timeline
+  useEffect(() => {
+    if (isPaused) return;
+    
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % milestones.length);
+    }, 6000); // 6 seconds per chapter
+    
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
   return (
     <section
       id="story"
       aria-labelledby="story-heading"
       className="relative overflow-hidden bg-[#060914] py-24 md:py-32"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,122,0.07),transparent_20%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(212,175,122,0.03)_50%,transparent_100%)]" />
-      <GoldenParticles count={16} className="opacity-50" />
+      <div className="absolute inset-0 bg-[url('/royal/texture.png')] bg-cover bg-center opacity-5 mix-blend-overlay" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,122,0.07),transparent_30%)]" />
+      
+      {/* Floating Elements */}
+      <FloatingLanterns count={6} />
+      <FallingPetals count={10} />
+      <GoldenParticles count={20} className="opacity-50" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <RevealOnScroll className="text-center">
-          <p className="font-serif text-sm uppercase tracking-[0.55em] text-[#f0d9a8]">Two Souls, One Journey</p>
-          <h2 id="story-heading" className="hindi-text mt-4 text-4xl text-[#f5efe0] md:text-6xl">
-            {couple.bride.name} <span className="text-[#e8939f]">&amp;</span> {couple.groom.name}
-          </h2>
-          <div className="mx-auto mt-6 h-px w-24 bg-gradient-to-r from-transparent via-[#d4af7a] to-transparent" />
-          <p className="mx-auto mt-6 max-w-xl text-base leading-8 text-[#f5efe0]/70">
-            A new chapter begins in love, trust and celebration — where every promise feels like a blessing
-            and every moment is made to be remembered.
+          <p className="section-label">Two Souls, One Journey</p>
+          <div className="mt-4 flex flex-col items-center justify-center gap-3 pt-2">
+            <div className="flex items-center gap-3">
+              <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#d4af7a]/60" />
+              <h2 id="story-heading" className="hindi-text text-3xl font-bold text-[#f5efe0] text-gold-shimmer leading-[1.4]">
+                {couple.bride.name}
+              </h2>
+              <span className="text-[#e8939f] text-2xl" aria-hidden>❤</span>
+              <h2 className="hindi-text text-3xl font-bold text-[#f5efe0] text-gold-shimmer leading-[1.4]">
+                {couple.groom.name}
+              </h2>
+              <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#d4af7a]/60" />
+            </div>
+          </div>
+          <p className="mx-auto mt-6 max-w-xl text-base leading-8 text-[#f5efe0]/80">
+            A cinematic timeline of love, trust and celebration.
           </p>
         </RevealOnScroll>
 
-        {/* Timeline */}
+        {/* Animated Timeline Carousel */}
         <div className="relative mt-20 md:mt-28">
-          {/* Central spine */}
-          <div className="absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[#d4af7a]/30 to-transparent md:block" />
+          
+          {/* Horizontal Timeline Path */}
+          <div className="relative mx-auto w-full max-w-4xl h-1 bg-[#16122d] rounded-full mb-16 hidden md:block">
+            {/* Animated Progress Line */}
+            <motion.div 
+              className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-[#d4af7a] via-[#e8939f] to-[#d4af7a] rounded-full shadow-[0_0_15px_rgba(212,175,122,0.6)]"
+              initial={{ width: "0%" }}
+              animate={{ width: `${(activeIndex / (milestones.length - 1)) * 100}%` }}
+              transition={{ duration: 1, ease: "easeInOut" }}
+            />
+            
+            {/* Timeline Nodes */}
+            <div className="absolute inset-0 flex justify-between items-center px-0">
+              {milestones.map((m, i) => (
+                <button
+                  key={`node-${i}`}
+                  onClick={() => setActiveIndex(i)}
+                  className="relative z-10 flex flex-col items-center group outline-none"
+                  aria-label={`Go to ${m.year}`}
+                >
+                  <motion.div 
+                    animate={{ 
+                      scale: activeIndex === i ? 1.5 : 1,
+                      backgroundColor: activeIndex >= i ? "#f0d9a8" : "#060914",
+                      borderColor: activeIndex >= i ? "#f0d9a8" : "#d4af7a"
+                    }}
+                    transition={{ duration: 0.5 }}
+                    className="h-4 w-4 rounded-full border-2 border-[#d4af7a] shadow-[0_0_10px_rgba(240,217,168,0.5)] transition-all group-hover:scale-125"
+                  />
+                  <div className={`absolute top-8 w-max text-center transition-all duration-500 ${activeIndex === i ? "opacity-100" : "opacity-40 group-hover:opacity-80"}`}>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-[#d4af7a] font-semibold">{m.year}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
 
-          <div className="space-y-16 md:space-y-24">
-            {milestones.map((m, i) => {
-              const isLeft = i % 2 === 0;
-              return (
-                <div key={m.year} className="relative grid items-center gap-8 md:grid-cols-2 md:gap-12">
-                  {/* Spine node */}
-                  <div className="absolute left-1/2 top-1/2 z-20 hidden h-4 w-4 -translate-x-1/2 -translate-y-1/2 md:block">
-                    <span className="absolute inset-0 rounded-full bg-[#f0d9a8] shadow-[0_0_14px_rgba(240,217,168,0.7)]" />
+          {/* Chapter Content Reveal */}
+          <div className="relative min-h-[500px] flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIndex}
+                initial={{ opacity: 0, x: 50, filter: "blur(10px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, x: -50, filter: "blur(10px)" }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full max-w-5xl"
+              >
+                <div className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
+                  {/* Memory frame */}
+                  <div className="order-2 md:order-1 flex justify-center">
+                    <motion.div 
+                      whileHover={{ scale: 1.05, rotate: -2 }} 
+                      transition={{ duration: 0.5, type: "spring" }}
+                    >
+                      <OrnamentalFrame className="max-w-[280px] sm:max-w-[320px]">
+                        <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[linear-gradient(160deg,rgba(15,27,73,0.8),rgba(5,9,19,0.95))] p-8 shadow-[inset_0_0_40px_rgba(212,175,122,0.2)]">
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(240,217,168,0.2),transparent_60%)]" />
+                          <div className="absolute inset-4 border border-[#d4af7a]/20 rounded-full border-dashed animate-[spinSlow_30s_linear_infinite]" />
+                          
+                          {milestones[activeIndex].img ? (
+                            <img 
+                              src={milestones[activeIndex].img} 
+                              alt={milestones[activeIndex].title} 
+                              className="relative z-10 h-[85%] w-[85%] object-cover rounded-full" 
+                            />
+                          ) : (
+                            <motion.span
+                              animate={{ y: [0, -10, 0], scale: [1, 1.1, 1] }}
+                              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                              className="relative z-10 text-[6rem] drop-shadow-[0_0_25px_rgba(240,217,168,0.5)]"
+                              aria-hidden
+                            >
+                              {milestones[activeIndex].emoji}
+                            </motion.span>
+                          )}
+                        </div>
+                      </OrnamentalFrame>
+                    </motion.div>
                   </div>
 
-                  {/* Memory frame */}
-                  <RevealOnScroll
-                    direction={isLeft ? "right" : "left"}
-                    className={isLeft ? "md:order-1" : "md:order-2"}
-                  >
-                    <OrnamentalFrame className="mx-auto max-w-xs">
-                      <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[linear-gradient(160deg,rgba(15,27,73,0.7),rgba(5,9,19,0.9))] p-8">
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(212,175,122,0.16),transparent_60%)]" />
-                        {m.img ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={m.img} alt={m.title} className="relative h-full w-full object-cover" />
-                        ) : (
-                          <motion.span
-                            animate={{ y: [0, -8, 0] }}
-                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                            className="relative text-6xl"
-                            aria-hidden
-                          >
-                            {m.emoji}
-                          </motion.span>
-                        )}
-                      </div>
-                    </OrnamentalFrame>
-                  </RevealOnScroll>
-
                   {/* Story text */}
-                  <RevealOnScroll
-                    delay={0.15}
-                    direction={isLeft ? "left" : "right"}
-                    className={isLeft ? "md:order-2" : "md:order-1"}
-                  >
-                    <div className={isLeft ? "md:pl-8" : "md:pr-8 md:text-right"}>
-                      <p className="text-xs uppercase tracking-[0.5em] text-[#f0d9a8]">{m.year}</p>
-                      <h3 className="hindi-text mt-3 text-3xl text-[#f5efe0] md:text-4xl">{m.title}</h3>
-                      <div
-                        className={`mt-4 h-px w-20 bg-gradient-to-r from-[#d4af7a]/60 to-transparent ${
-                          isLeft ? "" : "md:ml-auto"
-                        }`}
-                      />
-                      <p className="mt-4 text-base leading-8 text-[#f5efe0]/75">{m.story}</p>
+                  <div className="order-1 md:order-2">
+                    <div className="relative p-10 rounded-[2rem] border border-[#d4af7a]/15 bg-[linear-gradient(145deg,rgba(12,10,34,0.7),rgba(6,9,20,0.9))] shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-md">
+                      <div className="absolute -top-6 left-8 text-7xl text-[#d4af7a]/10 font-serif">"</div>
+                      <p className="text-xs uppercase tracking-[0.5em] text-[#f0d9a8] font-semibold">{milestones[activeIndex].year}</p>
+                      <h3 className="hindi-text mt-4 text-3xl font-bold md:text-4xl text-[#f5efe0] drop-shadow-md tracking-normal">{milestones[activeIndex].title}</h3>
+                      <div className="mt-6 h-px w-24 bg-gradient-to-r from-[#d4af7a]/80 to-transparent" />
+                      <p className="mt-6 text-lg leading-9 text-[#f5efe0]/85">{milestones[activeIndex].story}</p>
+                      <div className="absolute -bottom-4 right-8 text-7xl text-[#d4af7a]/10 font-serif rotate-180">"</div>
                     </div>
-                  </RevealOnScroll>
+                  </div>
                 </div>
-              );
-            })}
+              </motion.div>
+            </AnimatePresence>
           </div>
+          
+          {/* Mobile Timeline Indicators */}
+          <div className="mt-12 flex justify-center gap-3 md:hidden">
+            {milestones.map((_, i) => (
+              <button
+                key={`dot-${i}`}
+                onClick={() => setActiveIndex(i)}
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  activeIndex === i ? "w-8 bg-[#f0d9a8]" : "w-2 bg-[#d4af7a]/30"
+                }`}
+                aria-label={`Go to chapter ${i + 1}`}
+              />
+            ))}
+          </div>
+
         </div>
       </div>
     </section>

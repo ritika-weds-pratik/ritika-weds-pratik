@@ -1,26 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { motion, AnimatePresence, useAnimationFrame } from "framer-motion";
+import { X, ZoomIn } from "lucide-react";
 import { RevealOnScroll } from "@/components/effects/RevealOnScroll";
-import { OrnamentalFrame } from "@/components/effects/OrnamentalFrame";
 
-/**
- * Premium memories gallery — masonry layout with an interactive lightbox.
- *
- * Image system: each item may declare a real `src` (a path under /public).
- * If the file is present it is shown; otherwise an elegant royal placeholder
- * (themed gradient + SVG motif + caption) renders in its place. To use real
- * photos, drop files into /public/royal/ and set the `src` fields below —
- * no code change required.
- */
 type Photo = {
   src?: string;
   caption: string;
   motif: string;
-  /** Varying spans create the masonry rhythm. */
   aspect: "tall" | "wide" | "square";
   tint: string;
 };
@@ -45,46 +34,68 @@ const aspectClass: Record<Photo["aspect"], string> = {
 function Placeholder({ photo }: { photo: Photo }) {
   return (
     <div
-      className={`relative flex h-full w-full items-center justify-center overflow-hidden ${aspectClass[photo.aspect]}`}
-      style={{
-        background: `radial-gradient(circle at 50% 35%, ${photo.tint}33, rgba(5,9,19,0.9) 70%)`,
-      }}
+      className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-[#060914] ${aspectClass[photo.aspect]}`}
     >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(212,175,122,0.1),transparent_70%)]" />
       <div
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(45deg, transparent 0 10px, rgba(240,217,168,0.06) 10px 11px)",
-        }}
+        className="absolute inset-0 opacity-10"
+        style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent 0 10px, rgba(240,217,168,0.2) 10px 11px)" }}
       />
       <motion.span
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="text-5xl"
+        animate={{ y: [0, -10, 0], scale: [1, 1.05, 1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        className="text-6xl drop-shadow-[0_0_15px_rgba(212,175,122,0.3)]"
         aria-hidden
       >
         {photo.motif}
       </motion.span>
-      <p className="absolute bottom-4 left-0 right-0 text-center text-xs uppercase tracking-[0.35em] text-[#f0d9a8]">
-        {photo.caption}
-      </p>
     </div>
   );
 }
 
+// Duplicate photos for infinite scrolling effect
+const carouselPhotos = [...photos, ...photos];
+
 export function GallerySection() {
   const [selected, setSelected] = useState<number | null>(null);
+  
+  // Auto-scrolling logic
+  const [isHovered, setIsHovered] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollPosition = useRef(0);
+  
+  useAnimationFrame((t, delta) => {
+    if (!containerRef.current || isHovered || selected !== null) return;
+    
+    // Adjust speed here (pixels per millisecond)
+    const speed = 0.05;
+    scrollPosition.current -= speed * delta;
+    
+    // If we've scrolled past half the content, reset to create infinite loop
+    // Assuming each card + gap is roughly 400px, 8 cards = 3200px
+    if (scrollPosition.current <= -3200) {
+      scrollPosition.current += 3200;
+    }
+    
+    containerRef.current.style.transform = `translateX(${scrollPosition.current}px)`;
+  });
 
-  // Keyboard support for the lightbox.
   useEffect(() => {
-    if (selected === null) return;
+    if (selected === null) {
+      document.body.style.overflow = "unset";
+      return;
+    }
+    document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setSelected(null);
       if (e.key === "ArrowRight") setSelected((s) => (s === null ? s : (s + 1) % photos.length));
       if (e.key === "ArrowLeft") setSelected((s) => (s === null ? s : (s - 1 + photos.length) % photos.length));
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "unset";
+    };
   }, [selected]);
 
   return (
@@ -94,101 +105,174 @@ export function GallerySection() {
       className="relative overflow-hidden bg-[#0a1028] py-24 md:py-32"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,122,0.04),transparent_16%)]" />
+      
+      {/* Golden dust particles in background */}
+      <div className="absolute inset-0 bg-[url('/royal/texture.png')] bg-cover opacity-5 mix-blend-overlay pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <RevealOnScroll className="text-center">
-          <p className="font-serif text-sm uppercase tracking-[0.4em] text-[#f0d9a8]">Gallery</p>
-          <h2 id="gallery-heading" className="mt-4 font-serif text-4xl text-[#f5efe0] md:text-5xl">
-            Moments in Frame
-          </h2>
-          <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#f5efe0]/65">
-            A treasury of memories — tap any frame to view it up close.
+          <p className="section-label">Moments in Frame</p>
+          <div className="mt-4 flex items-center justify-center gap-3 pt-2">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#d4af7a]/60" />
+            <h2 id="gallery-heading" className="hindi-text text-3xl font-bold text-[#f5efe0] text-gold-shimmer">
+              गैलरी
+            </h2>
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#d4af7a]/60" />
+          </div>
+          <p className="mx-auto mt-6 max-w-md text-sm leading-7 text-[#f5efe0]/70">
+            A cinematic treasury of memories. Tap any frame to immerse in the moment.
           </p>
         </RevealOnScroll>
-
-        <div className="mt-14 columns-1 gap-5 sm:columns-2 xl:columns-3">
-          {photos.map((photo, index) => (
-            <RevealOnScroll key={photo.caption} delay={(index % 3) * 0.05}>
-              <motion.button
-                type="button"
-                onClick={() => setSelected(index)}
-                whileHover={{ y: -6 }}
-                className="mb-5 block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f0d9a8]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1028]"
-                aria-label={`View ${photo.caption}`}
-              >
-                <OrnamentalFrame tint={photo.tint}>
-                  {photo.src ? (
-                    <Image
-                      src={photo.src}
-                      alt={photo.caption}
-                      width={900}
-                      height={1200}
-                      className={`w-full object-cover transition duration-700 hover:scale-105 ${aspectClass[photo.aspect]}`}
-                    />
-                  ) : (
-                    <Placeholder photo={photo} />
-                  )}
-                </OrnamentalFrame>
-              </motion.button>
-            </RevealOnScroll>
-          ))}
-        </div>
       </div>
 
-      {/* Lightbox */}
+      {/* Luxury Auto-Carousel */}
+      <div 
+        className="relative z-20 mt-20 w-full overflow-hidden py-10"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={() => setIsHovered(false)}
+      >
+        <div 
+          ref={containerRef}
+          className="flex w-max items-center gap-8 px-8"
+          style={{ willChange: "transform" }}
+        >
+          {carouselPhotos.map((photo, index) => {
+            // Original index for selection mapping
+            const originalIndex = index % photos.length;
+            const rotateAngle = index % 2 === 0 ? 3 : -3;
+            
+            return (
+              <div 
+                key={`${photo.caption}-${index}`} 
+                className="w-[280px] sm:w-[320px] md:w-[380px] shrink-0 perspective-[1000px]"
+              >
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ 
+                    duration: 6 + (index % 3), 
+                    delay: (index % 4) * 0.5, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                  }}
+                >
+                  <motion.button
+                    type="button"
+                    onClick={() => setSelected(originalIndex)}
+                    initial={{ rotate: rotateAngle }}
+                    whileHover={{ scale: 1.05, rotate: 0, z: 50 }}
+                    className="group relative block w-full overflow-hidden rounded-[1rem] bg-[#f5efe0] p-3 pb-14 shadow-[0_20px_40px_rgba(0,0,0,0.5)] transition-all duration-500 hover:shadow-[0_30px_60px_rgba(212,175,122,0.3)] focus:outline-none"
+                    aria-label={`View ${photo.caption}`}
+                    style={{ transformStyle: "preserve-3d" }}
+                  >
+                    {/* Polaroid inner frame */}
+                    <div className="relative overflow-hidden rounded-md border border-[#d4af7a]/20 shadow-[inset_0_0_10px_rgba(0,0,0,0.1)]">
+                      {photo.src ? (
+                        <Image
+                          src={photo.src}
+                          alt={photo.caption}
+                          width={900}
+                          height={1200}
+                          className={`w-full object-cover transition duration-1000 group-hover:scale-110 ${aspectClass[photo.aspect]}`}
+                        />
+                      ) : (
+                        <Placeholder photo={photo} />
+                      )}
+                      
+                      {/* Hover overlay with zoom icon */}
+                      <div className="absolute inset-0 bg-[#060914]/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center backdrop-blur-[2px]">
+                        <ZoomIn className="h-12 w-12 text-[#f0d9a8] drop-shadow-md scale-50 transition-transform duration-300 group-hover:scale-100" />
+                      </div>
+                    </div>
+                    
+                    {/* Polaroid caption */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center justify-center">
+                      <p className="font-serif text-sm uppercase tracking-[0.25em] text-[#050a1f]/80 font-semibold">{photo.caption}</p>
+                    </div>
+                  </motion.button>
+                </motion.div>
+              </div>
+            );
+          })}
+        </div>
+        
+        {/* Carousel Fade Edges */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0a1028] to-transparent z-30" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0a1028] to-transparent z-30" />
+      </div>
+
+      {/* Cinematic Lightbox Experience */}
       <AnimatePresence>
         {selected !== null && (
           <motion.div
-            className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90 p-6 backdrop-blur-sm"
+            className="fixed inset-0 z-[120] flex items-center justify-center bg-black/95 p-4 md:p-8 backdrop-blur-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
             onClick={() => setSelected(null)}
             data-lenis-prevent
           >
+            {/* Ambient glows */}
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#d4af7a]/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#e8939f]/10 rounded-full blur-[100px] pointer-events-none" />
+
             <button
-              className="absolute right-6 top-6 rounded-full border border-[#d4af7a]/30 bg-[#0b1027] p-3 text-[#f5efe0] transition hover:bg-[#0b1027]/80"
+              className="absolute right-6 top-6 z-50 rounded-full border border-[#d4af7a]/30 bg-[#0b1027]/50 p-4 text-[#f5efe0] backdrop-blur-md transition-all hover:bg-[#d4af7a]/20 hover:scale-110"
               onClick={() => setSelected(null)}
               aria-label="Close gallery"
             >
-              <X className="h-5 w-5" />
+              <X className="h-6 w-6" />
             </button>
 
             <motion.figure
               key={selected}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: -50 }}
+              transition={{ duration: 0.6, type: "spring", damping: 25, stiffness: 200 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-h-[85vh]"
+              className="relative max-h-[90vh] w-full max-w-5xl"
             >
-              <OrnamentalFrame className="w-[88vw] max-w-3xl">
-                <div className="flex aspect-[3/4] items-center justify-center bg-[linear-gradient(160deg,rgba(15,27,73,0.6),rgba(5,9,19,0.9))] sm:aspect-[4/3]">
-                  {photos[selected].src ? (
-                    <Image
-                      src={photos[selected].src!}
-                      alt={photos[selected].caption}
-                      width={1200}
-                      height={1600}
-                      className="max-h-[80vh] w-full object-contain"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center gap-4 px-8 text-center">
-                      <span className="text-7xl" aria-hidden>
-                        {photos[selected].motif}
-                      </span>
-                      <p className="text-sm uppercase tracking-[0.4em] text-[#f0d9a8]">{photos[selected].caption}</p>
-                      <p className="max-w-xs text-xs leading-6 text-[#f5efe0]/55">
-                        A photograph will appear here once added.
-                      </p>
-                    </div>
-                  )}
+              <div className="relative overflow-hidden rounded-2xl border border-[#d4af7a]/30 shadow-[0_0_80px_rgba(212,175,122,0.15)] bg-[#050a1f]">
+                {photos[selected].src ? (
+                  <Image
+                    src={photos[selected].src!}
+                    alt={photos[selected].caption}
+                    width={1800}
+                    height={1200}
+                    className="max-h-[80vh] w-full object-contain"
+                  />
+                ) : (
+                  <div className="flex aspect-video w-full flex-col items-center justify-center gap-6 px-8 text-center bg-[radial-gradient(circle_at_center,rgba(212,175,122,0.15),transparent)]">
+                    <motion.span 
+                      animate={{ scale: [1, 1.2, 1] }} 
+                      transition={{ duration: 4, repeat: Infinity }} 
+                      className="text-8xl drop-shadow-[0_0_30px_rgba(212,175,122,0.5)]" 
+                      aria-hidden
+                    >
+                      {photos[selected].motif}
+                    </motion.span>
+                    <p className="font-serif text-2xl uppercase tracking-[0.4em] text-[#f0d9a8] mt-4">{photos[selected].caption}</p>
+                    <p className="max-w-md text-sm leading-6 text-[#f5efe0]/60">
+                      A high-resolution photograph will appear here once added to the royal collection.
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-8 flex items-center justify-between">
+                <p className="font-serif text-lg tracking-widest text-[#f0d9a8]">
+                  {photos[selected].caption}
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#d4af7a]/50" />
+                  <p className="font-mono text-sm text-[#f5efe0]/50 tracking-widest">
+                    {String(selected + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}
+                  </p>
                 </div>
-              </OrnamentalFrame>
-              <figcaption className="mt-4 text-center text-xs uppercase tracking-[0.4em] text-[#f0d9a8]">
-                {photos[selected].caption} · {selected + 1} / {photos.length}
-              </figcaption>
+              </div>
             </motion.figure>
           </motion.div>
         )}

@@ -56,11 +56,11 @@ export function CountdownSection() {
 
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
         <RevealOnScroll>
-          <p className="font-serif text-sm uppercase tracking-[0.4em] text-[#f0d9a8]">Live Countdown</p>
-          <h2 id="countdown-heading" className="mt-4 font-serif text-4xl text-[#f5efe0] md:text-5xl">
-            Counting the Days
+          <p className="section-label">Live Countdown</p>
+          <h2 id="countdown-heading" className="mt-4 hindi-text text-3xl font-bold text-[#f5efe0] text-gold-shimmer pt-2">
+            प्रतीक्षा
           </h2>
-          <p className="mt-3 text-xs uppercase tracking-[0.4em] text-[#f0d9a8]/70">{weddingDate.display}</p>
+          <p className="number-text mt-3 text-sm md:text-base font-semibold tracking-[0.2em] text-[#f0d9a8]/80">{weddingDate.display}</p>
         </RevealOnScroll>
 
         <div className="mt-14 grid gap-5 sm:grid-cols-4">
@@ -79,13 +79,12 @@ export function CountdownSection() {
                       animate={{ y: 0, opacity: 1, rotateX: 0 }}
                       exit={{ y: 18, opacity: 0, rotateX: 40 }}
                       transition={{ duration: 0.45, ease: "easeOut" }}
-                      className="text-5xl font-semibold tracking-[0.08em] text-gold-shimmer md:text-6xl"
-                      style={{ fontFamily: '"Times New Roman", "Times", serif' }}
+                      className="number-text text-5xl font-semibold tracking-[0.1em] text-gold-shimmer md:text-7xl"
                     >
                       {String(item.value).padStart(2, "0")}
                     </motion.div>
                   </AnimatePresence>
-                  <p className="mt-3 text-[10px] uppercase tracking-[0.4em] text-[#f5efe0]/75">{item.label}</p>
+                  <p className="mt-3 font-serif text-[10px] uppercase tracking-[0.45em] text-[#f5efe0]/70">{item.label}</p>
                 </div>
               </div>
             </RevealOnScroll>

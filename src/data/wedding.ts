@@ -41,7 +41,7 @@ export const couple = {
     englishName: "Pratik",
     role: "सुपुत्र",
     monogram: "P",
-    parents: ["श्रीमती सुमित्रा जैसवाल एवं", "श्री प्रभात जैसवाल"],
+    parents: ["श्रीमती सुमित्रा जयसवाल एवं", "श्री प्रभात जयसवाल"],
     residence: ["दिलदारनगर, गाजीपुर,", "उत्तर प्रदेश"],
   },
   /** Monogram shown in gates + finale. */
@@ -69,10 +69,10 @@ export const venue = {
 export const events: CeremonyEvent[] = [
   {
     key: "satya-narayan-pujan-matkor",
-    title: "श्री सत्यनारायण पूजन एवं मंडवा मत्कोर",
+    title: "श्री सत्यनारायण पूजन एवं मंडवा मटकोर",
     englishLabel: "Satya Narayan Pujan & Matkor",
     date: "9 July 2026",
-    time: "पूजन 8:00 AM · मत्कोर 11:00 AM",
+    time: "पूजन 8:00 AM · मटकोर 11:00 AM",
     venue: "आयुष्मती का आवास, चिमनापुर",
     description:
       "शुभ कार्य का विधिवत आरंभ भगवान विष्णु के सत्यनारायण स्वरूप के पूजन एवं कथा श्रवण से होता है, फिर माटी के कलशों को सजाकर लाया जाता है — सुख-समृद्धि और गृहस्थी की शुभ शुरुआत का प्रतीक।",

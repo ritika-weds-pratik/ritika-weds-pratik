@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import {
   Cormorant_Garamond,
   Cinzel,
+  Noto_Serif_Devanagari,
   Noto_Sans_Devanagari,
-  Tiro_Devanagari_Hindi,
 } from "next/font/google";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
@@ -26,10 +26,10 @@ const cinzel = Cinzel({
   display: "swap",
 });
 
-const devHindi = Tiro_Devanagari_Hindi({
+const devHindi = Noto_Serif_Devanagari({
   variable: "--font-dev-hindi",
-  subsets: ["latin", "devanagari"],
-  weight: ["400"],
+  subsets: ["devanagari"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 

@@ -6,7 +6,7 @@ import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 type Direction = "up" | "down" | "left" | "right" | "scale" | "fade";
 
-const offset = 40;
+const offset = 24;
 
 const build = (direction: Direction, reduced: boolean): Variants => {
   if (reduced) {

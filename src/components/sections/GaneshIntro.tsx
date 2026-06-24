@@ -66,9 +66,9 @@ export function DivineBlessingsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
           viewport={{ once: true }}
-          className="hindi-text text-sm uppercase tracking-[0.6em] text-[#f0d9a8]"
+          className="hindi-text text-base font-semibold tracking-normal text-[#f0d9a8] select-none"
         >
-          ।। श्री गणेशाय नमः ।।
+          ॥ श्री गणेशाय नमः ॥
         </motion.p>
 
         <motion.h2
@@ -77,7 +77,7 @@ export function DivineBlessingsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.9 }}
           viewport={{ once: true }}
-          className="mt-6 font-serif text-3xl text-[#f5efe0] md:text-5xl"
+          className="mt-6 hindi-text text-3xl font-bold text-[#f5efe0] md:text-4xl text-gold-shimmer select-none"
         >
           वन्दना
         </motion.h2>
@@ -87,13 +87,13 @@ export function DivineBlessingsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 1 }}
           viewport={{ once: true }}
-          className="mt-8 max-w-2xl"
+          className="mt-8 max-w-2xl select-none"
         >
-          <p className="hindi-text text-lg leading-9 text-[#f0d9a8] md:text-2xl md:leading-10">
+          <p className="hindi-text text-lg leading-9 text-[#f0d9a8] md:text-2xl md:leading-10 tracking-normal font-medium">
             वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ।
           </p>
-          <p className="hindi-text text-lg leading-9 text-[#f0d9a8] md:text-2xl md:leading-10">
-            निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा।।
+          <p className="hindi-text text-lg leading-9 text-[#f0d9a8] md:text-2xl md:leading-10 tracking-normal font-medium">
+            निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा॥
           </p>
         </motion.blockquote>
 

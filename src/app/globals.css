@@ -16,13 +16,49 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ==================================================
+   HINDI / DEVANAGARI TYPOGRAPHY
+   Primary: Noto Serif Devanagari (full conjunct support, multi-weight)
+   Fallback: Noto Sans Devanagari
+   ================================================== */
 .hindi-text {
-  font-family: var(--font-dev-hindi), var(--font-noto-devanagari), serif;
-  font-feature-settings: "liga" 1, "kern" 1;
+  font-family: var(--font-dev-hindi), var(--font-noto-devanagari), "Noto Serif Devanagari", serif;
+  font-feature-settings: "liga" 1, "kern" 1, "calt" 1;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* CRITICAL: Never add letter-spacing to Devanagari — it breaks conjuncts */
+  letter-spacing: 0;
+  word-spacing: 0.05em;
+  line-height: 1.5;
+  padding-top: 0.15em; /* Space for top matras (ा ि ी ु) */
+  padding-bottom: 0.05em;
 }
+
+/* Headings need slightly less line-height than body */
+h1.hindi-text, h2.hindi-text, h3.hindi-text, h4.hindi-text {
+  line-height: 1.35;
+  padding-top: 0.2em;
+}
+
+/* Numbers: Cinzel for luxury serif numeral rendering */
+.number-text {
+  font-family: var(--font-cinzel), "Cinzel", "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Section eyebrow labels */
+.section-label {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: #f0d9a8;
+}
+
 
 body {
   position: relative;
@@ -204,4 +240,13 @@ body::after {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: goldSweep 6s linear infinite;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
