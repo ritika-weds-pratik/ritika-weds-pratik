@@ -165,7 +165,9 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Attempt playback once unlocked and ready (for the case where the guest
-  // taps Begin after the player has already signalled ready).
+  // taps Begin after the player has already signalled ready). Mirroring the
+  // external player's unmuted state into React here is intentional — this
+  // effect syncs the YouTube IFrame (external system) with component state.
   useEffect(() => {
     const p = playerRef.current;
     if (!p || !shouldPlay || !ready) return;
@@ -173,6 +175,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       p.unMute();
       p.setVolume(45);
       p.playVideo();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMuted(false);
     } catch {
       /* player not quite ready */

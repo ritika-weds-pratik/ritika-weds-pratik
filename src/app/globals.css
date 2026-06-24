@@ -29,7 +29,7 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(circle at top, rgba(212, 175, 122, 0.08), transparent 16%),
-    linear-gradient(180deg, #050a1f 0%, #0b173f 45%, #0f1f56 100%);
+    linear-gradient(180deg, #050a1f 0%, #0b1027 45%, #060914 100%);
   color: var(--foreground);
   font-family: var(--font-cormorant), serif;
   overflow-x: hidden;

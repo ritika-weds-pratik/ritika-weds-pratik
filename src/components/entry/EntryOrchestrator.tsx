@@ -22,17 +22,26 @@ export function EntryOrchestrator({ children }: { children: React.ReactNode }) {
   const reduced = usePrefersReducedMotion();
   const { unlock } = useAudio();
 
-  // Compute the initial stage without a setState-in-effect cascade:
-  // - reduced motion, or a repeat visit in this session → skip straight in.
-  const [skipIntro] = useState(() => {
-    if (reduced) return true;
-    try {
-      return sessionStorage.getItem(STORAGE_KEY) === "1";
-    } catch {
-      return false;
+  // Always start at "splash" so server and first client render are identical
+  // (no hydration mismatch). After mount, skip the intro for repeat visits or
+  // reduced-motion users via a single, guarded state flip.
+  const [stage, setStage] = useState<Stage>("splash");
+
+  useEffect(() => {
+    if (reduced) {
+      // One-time guarded flip (skip intro); not a render cascade.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStage("done");
+      return;
     }
-  });
-  const [stage, setStage] = useState<Stage>(skipIntro ? "done" : "splash");
+    try {
+      if (sessionStorage.getItem(STORAGE_KEY) === "1") {
+        setStage("done");
+      }
+    } catch {
+      /* sessionStorage unavailable — show the intro */
+    }
+  }, [reduced]);
 
   // Mark the intro as completed once we reach the main site, and reset scroll.
   useEffect(() => {
@@ -54,6 +63,8 @@ export function EntryOrchestrator({ children }: { children: React.ReactNode }) {
 
   const toDone = useCallback(() => setStage("done"), []);
 
+  const isDone = stage === "done";
+
   return (
     <>
       <AnimatePresence mode="wait">
@@ -63,9 +74,9 @@ export function EntryOrchestrator({ children }: { children: React.ReactNode }) {
 
       {/* Render the main site underneath; reveal it (and let it scroll) once done. */}
       <div
-        aria-hidden={stage !== "done"}
+        aria-hidden={!isDone}
         style={
-          stage === "done" ? undefined : { overflow: "hidden", height: "100vh", maxHeight: "100dvh" }
+          isDone ? undefined : { overflow: "hidden", height: "100vh", maxHeight: "100dvh" }
         }
       >
         {children}
