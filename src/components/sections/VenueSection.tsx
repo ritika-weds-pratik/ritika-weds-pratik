@@ -108,7 +108,7 @@ export function VenueSection() {
                     </div>
                     <div>
                       <dt className="text-[10px] uppercase tracking-[0.35em] text-[#f0d9a8]/70">Time</dt>
-                      <dd className="number-text text-base md:text-lg text-[#f5efe0] font-semibold tracking-widest">11:00 AM <span className="font-serif tracking-[0.2em] text-xs uppercase">onwards</span></dd>
+                      <dd className="number-text text-base md:text-lg text-[#f5efe0] font-semibold tracking-widest">6:00 PM <span className="font-serif tracking-[0.2em] text-xs uppercase">onwards</span></dd>
                     </div>
                   </div>
                 </dl>

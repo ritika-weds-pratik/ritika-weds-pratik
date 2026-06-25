@@ -69,10 +69,10 @@ export const venue = {
 export const events: CeremonyEvent[] = [
   {
     key: "satya-narayan-pujan-matkor",
-    title: "श्री सत्यनारायण पूजन एवं मंडवा मटकोर",
+    title: "श्री सत्यनारायण पूजन एवं कथा मटकोर",
     englishLabel: "Satya Narayan Pujan & Matkor",
     date: "9 July 2026",
-    time: "पूजन 8:00 AM · मटकोर 11:00 AM",
+    time: "पूजन · मटकोर 6:00 PM",
     venue: "आयुष्मती का आवास, चिमनापुर",
     description:
       "शुभ कार्य का विधिवत आरंभ भगवान विष्णु के सत्यनारायण स्वरूप के पूजन एवं कथा श्रवण से होता है, फिर माटी के कलशों को सजाकर लाया जाता है — सुख-समृद्धि और गृहस्थी की शुभ शुरुआत का प्रतीक।",
@@ -84,7 +84,7 @@ export const events: CeremonyEvent[] = [
     title: "मेहंदी एवं संगीत संध्या",
     englishLabel: "Mehendi & Sangeet",
     date: "10 July 2026",
-    time: "मेहंदी 4:00 PM · संगीत 8:00 PM",
+    time: "मेहंदी · संगीत 8:00 PM",
     venue: "आयुष्मती का आवास, चिमनापुर",
     description:
       "हाथों पर रची मेहंदी के साथ हंसी, गीत और रंगों का उत्सव, फिर परिवारों की धमाकेदार प्रस्तुतियाँ, संगीत की ताल और रात भर चलने वाला नाच-गाना।",
@@ -96,7 +96,7 @@ export const events: CeremonyEvent[] = [
     title: "शुभ विवाह, स्वागत समारोह एवं प्रीति भोज",
     englishLabel: "Wedding Ceremony",
     date: "11 July 2026",
-    time: "11:00 AM (विवाह मुहूर्त) · स्वागत 7:00 PM",
+    time: "प्रीति भोज 6:00 PM",
     venue: "Pearl Marriage Vatika",
     description:
       "कन्यादान, मंगलफेरे और सात वचनों के साथ दो आत्माओं का पावन मिलन, फिर नवदंपति का राजसी अभिनंदन — भव्य भोज, आशीर्वाद और यादगार शाम।",

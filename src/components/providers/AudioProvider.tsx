@@ -22,7 +22,7 @@ import {
  * The MuteToggle flips player.mute()/unMute().
  */
 
-const VIDEO_ID = "MqGPokaVo6o";
+const VIDEO_ID = "HBvG3pBIjp4";
 
 // Minimal subset of the YouTube IFrame API we use.
 type YTPlayer = {
